@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="pl" data-theme="editorial">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FAF7F2">
+  <meta name="description" content="Praktyczny przewodnik po parkingach w okolicy Kościoła Najświętszego Zbawiciela i Placu Zbawiciela w Warszawie.">
+  <title>Parkingi w okolicy Placu Zbawiciela | A &amp; M</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      color-scheme: light;
+      --page-bg: #FAF7F2;
+      --surface: #FFFFFF;
+      --text: #2C2A29;
+      --muted: #716A63;
+      --border: #E2D9C8;
+      --accent: #786343;
+      --accent-hover: #625237;
+      --accent-contrast: #FFFFFF;
+      --soft-accent: #F3EEE5;
+      --shadow: 0 16px 42px rgba(58, 47, 34, 0.06);
+    }
+
+    html[data-theme="sage"] {
+      --page-bg: #F7F5F0;
+      --surface: #FFFFFF;
+      --text: #292D28;
+      --muted: #687067;
+      --border: #DCE1D7;
+      --accent: #6B7E68;
+      --accent-hover: #53664F;
+      --accent-contrast: #FFFFFF;
+      --soft-accent: #E9EEE6;
+      --shadow: 0 16px 42px rgba(43, 61, 43, 0.07);
+    }
+
+    html[data-theme="espresso"] {
+      --page-bg: #EFE8DC;
+      --surface: #FDFBF7;
+      --text: #302921;
+      --muted: #6D6256;
+      --border: #D8C9B5;
+      --accent: #4A3C31;
+      --accent-hover: #352A22;
+      --accent-contrast: #FFFFFF;
+      --soft-accent: #E9DFD1;
+      --shadow: 0 16px 42px rgba(55, 42, 30, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Montserrat", sans-serif;
+      transition: background-color 240ms ease, color 240ms ease;
+    }
+
+    .serif {
+      font-family: "Cormorant Garamond", Georgia, serif;
+    }
+
+    .theme-picker,
+    .parking-card,
+    .driver-note {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .theme-picker {
+      border-radius: 1rem;
+    }
+
+    .theme-button {
+      border: 1px solid transparent;
+      color: var(--muted);
+      transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .theme-button:hover {
+      background: var(--soft-accent);
+      color: var(--text);
+    }
+
+    .theme-button[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
+
+    .parking-card {
+      border-radius: 1.25rem;
+      transition: transform 180ms ease, background-color 240ms ease, border-color 240ms ease;
+    }
+
+    .parking-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-icon,
+    .detail-icon,
+    .ornament {
+      color: var(--accent);
+    }
+
+    .card-icon {
+      background: var(--soft-accent);
+    }
+
+    .badge {
+      background: var(--soft-accent);
+      color: var(--text);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .map-link {
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .map-link:hover,
+    html[data-theme="sage"] .map-link,
+    html[data-theme="espresso"] .map-link {
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
+
+    .map-link:hover {
+      border-color: var(--accent-hover);
+      background: var(--accent-hover);
+    }
+
+    .driver-note {
+      border-radius: 1rem;
+      background: var(--soft-accent);
+      box-shadow: none;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mx-auto min-h-screen max-w-6xl px-5 pb-10 pt-5 sm:px-8 sm:pt-8">
+    <nav class="theme-picker mx-auto flex max-w-4xl flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:px-5" aria-label="Wybór wariantu stylu">
+      <span class="px-1 text-xs font-semibold uppercase tracking-[0.14em] muted">Wybierz wariant stylu:</span>
+      <div class="grid grid-cols-1 gap-1 sm:grid-cols-3" role="group" aria-label="Warianty wyglądu strony">
+        <button class="theme-button rounded-lg px-3 py-2 text-xs font-semibold" type="button" data-theme-choice="editorial" aria-pressed="true">Klasyczna Papeteria</button>
+        <button class="theme-button rounded-lg px-3 py-2 text-xs font-semibold" type="button" data-theme-choice="sage" aria-pressed="false">Wiosenna Szałwia</button>
+        <button class="theme-button rounded-lg px-3 py-2 text-xs font-semibold" type="button" data-theme-choice="espresso" aria-pressed="false">Piasek &amp; Espresso</button>
+      </div>
+    </nav>
+
+    <header class="mx-auto max-w-3xl pb-12 pt-14 text-center sm:pb-16 sm:pt-20">
+      <div class="mb-5 flex items-center justify-center gap-4" aria-hidden="true">
+        <span class="h-px w-12 bg-[var(--border)]"></span>
+        <i class="fa-solid fa-diamond ornament text-sm"></i>
+        <span class="h-px w-12 bg-[var(--border)]"></span>
+      </div>
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.25em] muted">Z radością zapraszamy</p>
+      <p class="serif mb-4 text-3xl font-medium sm:text-4xl">A <span class="ornament">&amp;</span> M</p>
+      <p class="mb-7 text-xs font-medium uppercase tracking-[0.2em] muted">17 Kwietnia 2027</p>
+      <h1 class="serif mb-4 text-4xl font-medium leading-tight sm:text-6xl">Parkingi w okolicy Placu Zbawiciela</h1>
+      <p class="mx-auto max-w-xl text-sm leading-7 muted sm:text-base">
+        Informacje o parkingach w okolicy Placu Zbawiciela, niedaleko Kościoła Najświętszego Zbawiciela. Mamy nadzieję, że ułatwią Wam dotarcie na uroczystość.
+      </p>
+      <div class="mt-6 inline-flex items-center gap-2 text-xs font-medium muted">
+        <i class="fa-solid fa-location-dot detail-icon" aria-hidden="true"></i>
+        <span>Warszawa</span>
+      </div>
+    </header>
+
+    <main>
+      <section aria-labelledby="parking-list-heading">
+        <div class="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p class="mb-1 text-xs font-semibold uppercase tracking-[0.18em] muted">Praktyczny przewodnik</p>
+            <h2 id="parking-list-heading" class="serif text-3xl font-semibold sm:text-4xl">Gdzie zaparkować</h2>
+          </div>
+          <span class="hidden items-center gap-2 pb-1 text-xs muted sm:inline-flex">
+            <i class="fa-solid fa-person-walking detail-icon" aria-hidden="true"></i>
+            Czas dojścia do kościoła
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+          <article class="parking-card flex flex-col p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-4">
+                <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
+                  <i class="fa-solid fa-square-parking"></i>
+                </span>
+                <div>
+                  <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 01</p>
+                  <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">CPG Parking Podziemny Strzeżony 24h, Waryńskiego</h3>
+                </div>
+              </div>
+              <span class="badge hidden shrink-0 rounded-full px-3 py-1 text-[10px] font-semibold sm:inline-block">Najbliżej kościoła</span>
+            </div>
+            <div class="mt-5 space-y-3 text-sm">
+              <p class="flex items-start gap-3 leading-6">
+                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>ul. Progi 1, 00-634 Warszawa</span>
+              </p>
+              <p class="flex items-center gap-3">
+                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>Ok. 2 minuty pieszo do kościoła</span>
+              </p>
+            </div>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-building detail-icon" aria-hidden="true"></i>Podziemny</span>
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-shield-halved detail-icon" aria-hidden="true"></i>Strzeżony</span>
+            </div>
+            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
+              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
+              Wjazd od ul. Progi.
+            </p>
+            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=CPG+Parking+Podziemny+Progi+1+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do CPG Parking Podziemny przy ulicy Progi 1 (otwiera się w nowej karcie)">
+              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
+            </a>
+          </article>
+
+          <article class="parking-card flex flex-col p-5 sm:p-6">
+            <div class="flex items-start gap-4">
+              <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
+                <i class="fa-solid fa-square-parking"></i>
+              </span>
+              <div>
+                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 02</p>
+                <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">Parking CH Plac Unii</h3>
+              </div>
+            </div>
+            <div class="mt-5 space-y-3 text-sm">
+              <p class="flex items-start gap-3 leading-6">
+                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>Wjazd od ul. Tadeusza Boya-Żeleńskiego, Warszawa</span>
+              </p>
+              <p class="flex items-center gap-3">
+                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>Ok. 6 minut pieszo do kościoła</span>
+              </p>
+            </div>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-building detail-icon" aria-hidden="true"></i>Wielopoziomowy</span>
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-square-parking detail-icon" aria-hidden="true"></i>Dużo miejsc</span>
+            </div>
+            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
+              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
+              Parking znajduje się w galerii handlowej.
+            </p>
+            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=Parking+Plac+Unii+Boya+Zelenskiego+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do parkingu CH Plac Unii (otwiera się w nowej karcie)">
+              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
+            </a>
+          </article>
+
+          <article class="parking-card flex flex-col p-5 sm:p-6">
+            <div class="flex items-start gap-4">
+              <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
+                <i class="fa-solid fa-square-parking"></i>
+              </span>
+              <div>
+                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 03</p>
+                <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">Interparking Piękna 20</h3>
+              </div>
+            </div>
+            <div class="mt-5 space-y-3 text-sm">
+              <p class="flex items-start gap-3 leading-6">
+                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>ul. Piękna 20, 00-549 Warszawa</span>
+              </p>
+              <p class="flex items-center gap-3">
+                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>Ok. 7 minut pieszo do kościoła</span>
+              </p>
+            </div>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-building detail-icon" aria-hidden="true"></i>Podziemny</span>
+            </div>
+            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
+              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
+              Nowoczesny parking podziemny.
+            </p>
+            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=Interparking+Piekna+20+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do Interparking Piękna 20 (otwiera się w nowej karcie)">
+              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
+            </a>
+          </article>
+
+          <article class="parking-card flex flex-col p-5 sm:p-6">
+            <div class="flex items-start gap-4">
+              <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
+                <i class="fa-solid fa-square-parking"></i>
+              </span>
+              <div>
+                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 04</p>
+                <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">APCOA Parking Bazar Polna</h3>
+              </div>
+            </div>
+            <div class="mt-5 space-y-3 text-sm">
+              <p class="flex items-start gap-3 leading-6">
+                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>ul. Polna 13, 00-633 Warszawa</span>
+              </p>
+              <p class="flex items-center gap-3">
+                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
+                <span>Ok. 3 minuty pieszo do kościoła</span>
+              </p>
+            </div>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
+              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-square-parking detail-icon" aria-hidden="true"></i>Naziemny</span>
+            </div>
+            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
+              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
+              Bardzo blisko Placu Zbawiciela. Płatność w parkomacie lub aplikacji APCOA Flow.
+            </p>
+            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=APCOA+Parking+Polna+13+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do APCOA Parking Bazar Polna (otwiera się w nowej karcie)">
+              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <aside class="driver-note mt-8 flex gap-4 p-5 sm:mt-10 sm:p-6" aria-labelledby="driver-note-heading">
+        <span class="ornament mt-0.5 text-lg" aria-hidden="true"><i class="fa-solid fa-circle-info"></i></span>
+        <div>
+          <h2 id="driver-note-heading" class="serif mb-1 text-2xl font-semibold">Wskazówka dla kierowców</h2>
+          <p class="text-sm leading-6 muted">
+            Ulice w okolicy objęte są Strefą Płatnego Parkowania. Jeśli planujecie parkować na ulicy, sprawdźcie oznakowanie i aktualne zasady opłat. Dla spokojnego dojazdu warto przyjechać 15–20 minut wcześniej.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="pb-4 pt-10 text-center">
+      <div class="mb-3 flex items-center justify-center gap-3" aria-hidden="true">
+        <span class="h-px w-8 bg-[var(--border)]"></span>
+        <i class="fa-solid fa-diamond ornament text-[10px]"></i>
+        <span class="h-px w-8 bg-[var(--border)]"></span>
+      </div>
+      <p class="text-[10px] font-medium uppercase tracking-[0.16em] muted">Do zobaczenia w Warszawie</p>
+    </footer>
+  </div>
+
+  <script>
+    const themeButtons = document.querySelectorAll("[data-theme-choice]");
+
+    themeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const theme = button.dataset.themeChoice;
+        document.documentElement.dataset.theme = theme;
+        themeButtons.forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+      });
+    });
+  </script>
+</body>
+</html>
