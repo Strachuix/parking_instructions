@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -107,6 +108,92 @@
       transform: translateY(-3px);
     }
 
+    .parking-map-frame {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    #parking-map {
+      width: 100%;
+      height: clamp(20rem, 55vh, 34rem);
+      background: var(--soft-accent);
+    }
+
+    .leaflet-container {
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .map-marker {
+      border: 0;
+      background: transparent;
+    }
+
+    .map-marker-pin {
+      display: grid;
+      width: 1.875rem;
+      height: 1.875rem;
+      place-items: center;
+      transform: rotate(-45deg);
+      border: 2px solid #FFFFFF;
+      border-radius: 50% 50% 50% 0;
+      background: var(--accent);
+      color: var(--accent-contrast);
+      box-shadow: 0 2px 8px rgba(37, 32, 27, 0.3);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .map-marker-content {
+      transform: rotate(45deg);
+    }
+
+    .map-marker--church .map-marker-pin {
+      transform: none;
+      border-radius: 50%;
+      background: #98524D;
+      font-size: 0.9rem;
+    }
+
+    .map-marker--church .map-marker-content {
+      transform: none;
+    }
+
+    .map-legend {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .map-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .map-legend-number,
+    .map-legend-church {
+      display: inline-grid;
+      width: 1.75rem;
+      height: 1.75rem;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid #FFFFFF;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--accent-contrast);
+      box-shadow: 0 1px 5px rgba(37, 32, 27, 0.2);
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+
+    .map-legend-church {
+      background: #98524D;
+      font-size: 0.8rem;
+    }
+
     .card-icon,
     .detail-icon,
     .ornament {
@@ -183,169 +270,27 @@
         <span class="h-px w-12 bg-[var(--border)]"></span>
       </div>
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.25em] muted">Z radością zapraszamy</p>
-      <p class="serif mb-4 text-3xl font-medium sm:text-4xl">A <span class="ornament">&amp;</span> M</p>
+      <p class="serif mb-4 text-3xl font-medium sm:text-4xl">Maria <span class="ornament">&amp;</span> Stanisław</p>
       <p class="mb-7 text-xs font-medium uppercase tracking-[0.2em] muted">17 Kwietnia 2027</p>
       <h1 class="serif mb-4 text-4xl font-medium leading-tight sm:text-6xl">Parkingi w okolicy Placu Zbawiciela</h1>
-      <p class="mx-auto max-w-xl text-sm leading-7 muted sm:text-base">
-        Informacje o parkingach w okolicy Placu Zbawiciela, niedaleko Kościoła Najświętszego Zbawiciela. Mamy nadzieję, że ułatwią Wam dotarcie na uroczystość.
-      </p>
-      <div class="mt-6 inline-flex items-center gap-2 text-xs font-medium muted">
-        <i class="fa-solid fa-location-dot detail-icon" aria-hidden="true"></i>
-        <span>Warszawa</span>
-      </div>
     </header>
 
     <main>
       <section aria-labelledby="parking-list-heading">
-        <div class="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <p class="mb-1 text-xs font-semibold uppercase tracking-[0.18em] muted">Praktyczny przewodnik</p>
-            <h2 id="parking-list-heading" class="serif text-3xl font-semibold sm:text-4xl">Gdzie zaparkować</h2>
+        <div class="parking-map-frame mb-6">
+          <div id="parking-map" role="region" aria-label="Interaktywna mapa parkingów i Kościoła Najświętszego Zbawiciela" aria-describedby="parking-map-legend"></div>
+          <div id="parking-map-legend" class="map-legend flex flex-wrap gap-x-6 gap-y-3 px-4 py-3 text-xs sm:px-5">
+            <span class="map-legend-item"><span class="map-legend-number">01</span> Numery parkingów odpowiadają liście poniżej</span>
+            <span class="map-legend-item"><span class="map-legend-church"><i class="fa-solid fa-cross" aria-hidden="true"></i></span> Kościół Najświętszego Zbawiciela</span>
           </div>
-          <span class="hidden items-center gap-2 pb-1 text-xs muted sm:inline-flex">
-            <i class="fa-solid fa-person-walking detail-icon" aria-hidden="true"></i>
-            Czas dojścia do kościoła
-          </span>
         </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-          <article class="parking-card flex flex-col p-5 sm:p-6">
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-4">
-                <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
-                  <i class="fa-solid fa-square-parking"></i>
-                </span>
-                <div>
-                  <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 01</p>
-                  <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">CPG Parking Podziemny Strzeżony 24h, Waryńskiego</h3>
-                </div>
-              </div>
-              <span class="badge hidden shrink-0 rounded-full px-3 py-1 text-[10px] font-semibold sm:inline-block">Najbliżej kościoła</span>
-            </div>
-            <div class="mt-5 space-y-3 text-sm">
-              <p class="flex items-start gap-3 leading-6">
-                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>ul. Progi 1, 00-634 Warszawa</span>
-              </p>
-              <p class="flex items-center gap-3">
-                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>Ok. 2 minuty pieszo do kościoła</span>
-              </p>
-            </div>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-building detail-icon" aria-hidden="true"></i>Podziemny</span>
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-shield-halved detail-icon" aria-hidden="true"></i>Strzeżony</span>
-            </div>
-            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
-              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
-              Wjazd od ul. Progi.
-            </p>
-            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=CPG+Parking+Podziemny+Progi+1+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do CPG Parking Podziemny przy ulicy Progi 1 (otwiera się w nowej karcie)">
-              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
-            </a>
-          </article>
-
-          <article class="parking-card flex flex-col p-5 sm:p-6">
-            <div class="flex items-start gap-4">
-              <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
-                <i class="fa-solid fa-square-parking"></i>
-              </span>
-              <div>
-                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 02</p>
-                <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">Parking CH Plac Unii</h3>
-              </div>
-            </div>
-            <div class="mt-5 space-y-3 text-sm">
-              <p class="flex items-start gap-3 leading-6">
-                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>Wjazd od ul. Tadeusza Boya-Żeleńskiego, Warszawa</span>
-              </p>
-              <p class="flex items-center gap-3">
-                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>Ok. 6 minut pieszo do kościoła</span>
-              </p>
-            </div>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-building detail-icon" aria-hidden="true"></i>Wielopoziomowy</span>
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-square-parking detail-icon" aria-hidden="true"></i>Dużo miejsc</span>
-            </div>
-            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
-              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
-              Parking znajduje się w galerii handlowej.
-            </p>
-            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=Parking+Plac+Unii+Boya+Zelenskiego+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do parkingu CH Plac Unii (otwiera się w nowej karcie)">
-              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
-            </a>
-          </article>
-
-          <article class="parking-card flex flex-col p-5 sm:p-6">
-            <div class="flex items-start gap-4">
-              <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
-                <i class="fa-solid fa-square-parking"></i>
-              </span>
-              <div>
-                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 03</p>
-                <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">Interparking Piękna 20</h3>
-              </div>
-            </div>
-            <div class="mt-5 space-y-3 text-sm">
-              <p class="flex items-start gap-3 leading-6">
-                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>ul. Piękna 20, 00-549 Warszawa</span>
-              </p>
-              <p class="flex items-center gap-3">
-                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>Ok. 7 minut pieszo do kościoła</span>
-              </p>
-            </div>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-building detail-icon" aria-hidden="true"></i>Podziemny</span>
-            </div>
-            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
-              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
-              Nowoczesny parking podziemny.
-            </p>
-            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=Interparking+Piekna+20+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do Interparking Piękna 20 (otwiera się w nowej karcie)">
-              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
-            </a>
-          </article>
-
-          <article class="parking-card flex flex-col p-5 sm:p-6">
-            <div class="flex items-start gap-4">
-              <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg" aria-hidden="true">
-                <i class="fa-solid fa-square-parking"></i>
-              </span>
-              <div>
-                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] muted">Parking 04</p>
-                <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">APCOA Parking Bazar Polna</h3>
-              </div>
-            </div>
-            <div class="mt-5 space-y-3 text-sm">
-              <p class="flex items-start gap-3 leading-6">
-                <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>ul. Polna 13, 00-633 Warszawa</span>
-              </p>
-              <p class="flex items-center gap-3">
-                <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
-                <span>Ok. 3 minuty pieszo do kościoła</span>
-              </p>
-            </div>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-clock detail-icon" aria-hidden="true"></i>Całodobowy (24h)</span>
-              <span class="badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium"><i class="fa-solid fa-square-parking detail-icon" aria-hidden="true"></i>Naziemny</span>
-            </div>
-            <p class="mt-4 flex items-start gap-2 text-xs leading-5 muted">
-              <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
-              Bardzo blisko Placu Zbawiciela. Płatność w parkomacie lub aplikacji APCOA Flow.
-            </p>
-            <a class="map-link mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold md:mt-auto" href="https://www.google.com/maps/search/?api=1&amp;query=APCOA+Parking+Polna+13+Warszawa" target="_blank" rel="noopener noreferrer" aria-label="Nawiguj do APCOA Parking Bazar Polna (otwiera się w nowej karcie)">
-              Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
-            </a>
-          </article>
-        </div>
+        <p id="parking-map-load-error" class="mb-4 text-sm text-red-800" role="status" hidden>
+          Nie udało się wczytać mapy. Lista parkingów pozostaje dostępna.
+        </p>
+        <div id="parking-list" class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5" aria-live="polite"></div>
+        <p id="parking-load-error" class="mt-4 text-sm text-red-800" role="alert" hidden>
+          Nie udało się wczytać parkingów. Sprawdź plik parkingi.json i otwórz stronę przez serwer HTTP.
+        </p>
       </section>
 
       <aside class="driver-note mt-8 flex gap-4 p-5 sm:mt-10 sm:p-6" aria-labelledby="driver-note-heading">
@@ -353,7 +298,7 @@
         <div>
           <h2 id="driver-note-heading" class="serif mb-1 text-2xl font-semibold">Wskazówka dla kierowców</h2>
           <p class="text-sm leading-6 muted">
-            Ulice w okolicy objęte są Strefą Płatnego Parkowania. Jeśli planujecie parkować na ulicy, sprawdźcie oznakowanie i aktualne zasady opłat. Dla spokojnego dojazdu warto przyjechać 15–20 minut wcześniej.
+            Ulice w okolicy objęte są Strefą Płatnego Parkowania. Jeśli planujecie parkować przy ulicy, pamiętajcie o opłacie w parkonetrze lub aplikacji mobilnej. Zalecamy przyjechać około 30 minutwcześniej, aby spokojnie znaleźć miejsce i dokonać opłaty.
           </p>
         </div>
       </aside>
@@ -369,8 +314,57 @@
     </footer>
   </div>
 
+  <template id="parking-card-template">
+    <article class="parking-card flex flex-col p-5 sm:p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-start gap-4">
+          <span class="card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold" data-field="number" role="img"></span>
+          <div>
+            <h3 class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]" data-field="name"></h3>
+          </div>
+        </div>
+        <span class="badge hidden shrink-0 rounded-full px-3 py-1 text-[10px] font-semibold" data-field="highlight" hidden></span>
+      </div>
+      <div class="hidden mt-5 space-y-3 text-sm" data-field="details" hidden>
+        <p class="hidden flex items-start gap-3 leading-6" data-field="address" hidden>
+          <i class="fa-solid fa-location-dot detail-icon mt-1 w-4 shrink-0 text-center" aria-hidden="true"></i>
+          <span></span>
+        </p>
+        <p class="hidden flex items-center gap-3" data-field="walking-time" hidden>
+          <i class="fa-solid fa-person-walking detail-icon w-4 shrink-0 text-center" aria-hidden="true"></i>
+          <span></span>
+        </p>
+      </div>
+      <p class="hidden mt-4 flex items-start gap-3 text-sm font-medium" data-field="price" hidden>
+        <i class="fa-solid fa-coins detail-icon mt-0.5 w-4 shrink-0 text-center" aria-hidden="true"></i>
+        <span><strong>Cena za godzinę:</strong> <span data-field="price-value"></span> zł</span>
+      </p>
+      <div class="hidden mt-5 flex flex-wrap gap-2" data-field="features" hidden></div>
+      <p class="hidden mt-4 flex items-start gap-2 text-xs leading-5 muted" data-field="note" hidden>
+        <i class="fa-solid fa-circle-info detail-icon mt-0.5" aria-hidden="true"></i>
+        <span></span>
+      </p>
+      <div class="hidden mt-auto pt-6" data-field="navigation-wrap" hidden>
+        <a class="map-link inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold" data-field="navigation" target="_blank" rel="noopener noreferrer">
+          Nawiguj <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </article>
+  </template>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
+    const featureIcons = {
+      clock: "fa-clock",
+      building: "fa-building",
+      shield: "fa-shield-halved",
+      parking: "fa-square-parking"
+    };
     const themeButtons = document.querySelectorAll("[data-theme-choice]");
+    const parkingList = document.querySelector("#parking-list");
+    const parkingCardTemplate = document.querySelector("#parking-card-template");
+    const parkingLoadError = document.querySelector("#parking-load-error");
+    const parkingMapLoadError = document.querySelector("#parking-map-load-error");
 
     themeButtons.forEach((button) => {
       button.addEventListener("click", () => {
@@ -381,6 +375,254 @@
         });
       });
     });
+
+    function requiredText(value, field, parkingNumber) {
+      if (typeof value !== "string" || value.trim() === "") {
+        throw new Error(`Parking ${parkingNumber}: pole "${field}" musi być niepustym tekstem.`);
+      }
+      return value.trim();
+    }
+
+    function optionalText(value, field, parkingNumber) {
+      if (value === undefined || value === null) {
+        return "";
+      }
+      if (typeof value !== "string") {
+        throw new Error(`Parking ${parkingNumber}: pole "${field}" musi być tekstem.`);
+      }
+      return value.trim();
+    }
+
+    function showOptional(element) {
+      element.hidden = false;
+      element.classList.remove("hidden");
+    }
+
+    function getCoordinates(location, label) {
+      if (
+        location === null ||
+        typeof location !== "object" ||
+        !Number.isFinite(location.lat) ||
+        !Number.isFinite(location.lng) ||
+        location.lat < -90 ||
+        location.lat > 90 ||
+        location.lng < -180 ||
+        location.lng > 180
+      ) {
+        throw new Error(`${label}: podaj poprawne współrzędne "lat" i "lng".`);
+      }
+      return [location.lat, location.lng];
+    }
+
+    function createParkingCard(parking, index) {
+      const parkingNumber = index + 1;
+      if (parking === null || typeof parking !== "object" || Array.isArray(parking)) {
+        throw new Error(`Parking ${parkingNumber}: oczekiwano obiektu JSON.`);
+      }
+      getCoordinates(parking, `Parking ${parkingNumber}`);
+      const features = parking.features;
+      const featuresAreBlank = typeof features === "string" && features.trim() === "";
+      if (features !== undefined && features !== null && !featuresAreBlank && !Array.isArray(features)) {
+        throw new Error(`Parking ${parkingNumber}: "features" musi być tablicą.`);
+      }
+
+      const card = parkingCardTemplate.content.firstElementChild.cloneNode(true);
+      const formattedNumber = String(parkingNumber).padStart(2, "0");
+      const numberBadge = card.querySelector('[data-field="number"]');
+      numberBadge.textContent = formattedNumber;
+      numberBadge.setAttribute("aria-label", `Parking ${formattedNumber}`);
+      const name = requiredText(parking.name, "name", parkingNumber);
+      card.querySelector('[data-field="name"]').textContent = name;
+
+      const details = card.querySelector('[data-field="details"]');
+      const address = optionalText(parking.address, "address", parkingNumber);
+      if (address) {
+        card.querySelector('[data-field="address"] span').textContent = address;
+        showOptional(card.querySelector('[data-field="address"]'));
+        showOptional(details);
+      }
+
+      const walkingTimeRow = card.querySelector('[data-field="walking-time"]');
+      const hasWalkingMinutes = parking.walkingMinutes !== undefined &&
+        parking.walkingMinutes !== null &&
+        !(typeof parking.walkingMinutes === "string" && parking.walkingMinutes.trim() === "");
+      if (hasWalkingMinutes) {
+        if (!Number.isInteger(parking.walkingMinutes) || parking.walkingMinutes < 1) {
+          throw new Error(`Parking ${parkingNumber}: "walkingMinutes" musi być dodatnią liczbą całkowitą.`);
+        }
+        const minutes = parking.walkingMinutes;
+        const minuteUnit = minutes === 1
+          ? "minuta"
+          : minutes % 10 >= 2 && minutes % 10 <= 4 && (minutes % 100 < 12 || minutes % 100 > 14)
+            ? "minuty"
+            : "minut";
+        walkingTimeRow.querySelector("span").textContent = `Ok. ${minutes} ${minuteUnit} pieszo do kościoła`;
+        showOptional(walkingTimeRow);
+        showOptional(details);
+      }
+
+      const price = card.querySelector('[data-field="price"]');
+      const priceValue = optionalText(parking.price, "price", parkingNumber);
+      if (priceValue) {
+        price.querySelector('[data-field="price-value"]').textContent = priceValue;
+        showOptional(price);
+      }
+
+      const highlight = card.querySelector('[data-field="highlight"]');
+      const highlightText = optionalText(parking.highlight, "highlight", parkingNumber);
+      if (highlightText) {
+        highlight.textContent = highlightText;
+        showOptional(highlight);
+      }
+
+      const featureList = card.querySelector('[data-field="features"]');
+      (Array.isArray(features) ? features : []).forEach((feature) => {
+        if (feature === null) {
+          return;
+        }
+        if (typeof feature !== "object" || Array.isArray(feature)) {
+          throw new Error(`Parking ${parkingNumber}: cecha musi być obiektem JSON.`);
+        }
+        const label = optionalText(feature.label, "features.label", parkingNumber);
+        const icon = optionalText(feature.icon, "features.icon", parkingNumber);
+        if (!label || !icon) {
+          return;
+        }
+        if (!Object.prototype.hasOwnProperty.call(featureIcons, icon)) {
+          throw new Error(`Parking ${parkingNumber}: nieznana ikona "${icon}".`);
+        }
+        const badge = document.createElement("span");
+        badge.className = "badge inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium";
+        const featureIcon = document.createElement("i");
+        featureIcon.className = `fa-solid ${featureIcons[icon]} detail-icon`;
+        featureIcon.setAttribute("aria-hidden", "true");
+        badge.append(featureIcon, document.createTextNode(label));
+        featureList.append(badge);
+      });
+      if (featureList.children.length > 0) {
+        showOptional(featureList);
+      }
+
+      const note = card.querySelector('[data-field="note"]');
+      const noteText = optionalText(parking.note, "note", parkingNumber);
+      if (noteText) {
+        note.querySelector("span").textContent = noteText;
+        showOptional(note);
+      }
+
+      const navigationUrl = optionalText(parking.navigationUrl, "navigationUrl", parkingNumber);
+      if (navigationUrl) {
+        const parsedUrl = new URL(navigationUrl);
+        if (parsedUrl.protocol !== "https:" || parsedUrl.hostname !== "www.google.com" || parsedUrl.pathname !== "/maps/search/") {
+          throw new Error(`Parking ${parkingNumber}: "navigationUrl" musi prowadzić do wyszukiwania w Google Maps.`);
+        }
+        const navigationLink = card.querySelector('[data-field="navigation"]');
+        navigationLink.href = parsedUrl.href;
+        navigationLink.setAttribute("aria-label", `Nawiguj do ${name} (otwiera się w nowej karcie)`);
+        showOptional(card.querySelector('[data-field="navigation-wrap"]'));
+      }
+
+      return card;
+    }
+
+    function createMapIcon(number, isChurch) {
+      const markerClass = isChurch ? "map-marker map-marker--church" : "map-marker";
+      const markerContent = isChurch
+        ? '<span class="map-marker-pin"><i class="fa-solid fa-cross map-marker-content" aria-hidden="true"></i></span>'
+        : `<span class="map-marker-pin"><span class="map-marker-content">${number}</span></span>`;
+      return L.divIcon({
+        className: markerClass,
+        html: markerContent,
+        iconSize: [32, 32],
+        iconAnchor: isChurch ? [16, 16] : [16, 28],
+        popupAnchor: [0, -28]
+      });
+    }
+
+    function createMapPopup(title, address) {
+      const popup = document.createElement("div");
+      const heading = document.createElement("strong");
+      heading.textContent = title;
+      popup.append(heading);
+      if (address) {
+        const lineBreak = document.createElement("br");
+        const details = document.createElement("span");
+        details.textContent = address;
+        popup.append(lineBreak, details);
+      }
+      return popup;
+    }
+
+    function renderParkingMap(church, parkings) {
+      const churchCoordinates = getCoordinates(church, "Kościół");
+      const churchName = requiredText(church.name, "name kościoła", "—");
+      const churchAddress = optionalText(church.address, "address kościoła", "—");
+      const map = L.map("parking-map", { scrollWheelZoom: false });
+      const markerCoordinates = [churchCoordinates];
+
+      L.marker(churchCoordinates, { icon: createMapIcon(null, true), title: churchName })
+        .addTo(map)
+        .bindPopup(createMapPopup(churchName, churchAddress));
+
+      parkings.forEach((parking, index) => {
+        const parkingNumber = String(index + 1).padStart(2, "0");
+        const coordinates = getCoordinates(parking, `Parking ${parkingNumber}`);
+        const name = requiredText(parking.name, "name", parkingNumber);
+        const address = optionalText(parking.address, "address", parkingNumber);
+        markerCoordinates.push(coordinates);
+
+        L.marker(coordinates, {
+          icon: createMapIcon(parkingNumber, false),
+          title: `Parking ${parkingNumber}: ${name}`
+        })
+          .addTo(map)
+          .bindPopup(createMapPopup(`Parking ${parkingNumber}: ${name}`, address));
+      });
+
+      map.fitBounds(L.latLngBounds(markerCoordinates), { padding: [28, 28], maxZoom: 15 });
+
+      const tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      });
+      tileLayer.on("tileerror", () => {
+        parkingMapLoadError.hidden = false;
+      });
+      tileLayer.addTo(map);
+    }
+
+    async function loadParkings() {
+      try {
+        const response = await fetch("./parkingi.json");
+        if (!response.ok) {
+          throw new Error(`Odpowiedź serwera: ${response.status} ${response.statusText}`);
+        }
+        const mapData = await response.json();
+        if (
+          mapData === null ||
+          typeof mapData !== "object" ||
+          Array.isArray(mapData) ||
+          !Array.isArray(mapData.parkings) ||
+          mapData.parkings.length === 0
+        ) {
+          throw new Error('Dane muszą zawierać obiekt kościoła i niepustą tablicę "parkings".');
+        }
+        getCoordinates(mapData.church, "Kościół");
+        parkingList.replaceChildren(...mapData.parkings.map(createParkingCard));
+
+        try {
+          renderParkingMap(mapData.church, mapData.parkings);
+        } catch (error) {
+          console.error("Nie udało się wyświetlić mapy parkingów.", error);
+          parkingMapLoadError.hidden = false;
+        }
+      } catch (error) {
+        console.error("Nie udało się wczytać parkingów z pliku parkingi.json.", error);
+        parkingLoadError.hidden = false;
+      }
+    }
+
+    loadParkings();
   </script>
 </body>
 </html>

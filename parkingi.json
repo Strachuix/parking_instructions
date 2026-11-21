@@ -1,0 +1,46 @@
+{
+  "church": {
+    "name": "Kościół Najświętszego Zbawiciela",
+    "address": "Plac Zbawiciela, Warszawa",
+    "lat": 52.2191907,
+    "lng": 21.0178636
+  },
+  "parkings": [
+    {
+      "name": "Parking Podziemny Waryńskiego",
+      "address": "ul. Progi 1, 00-634 Warszawa",
+      "walkingMinutes": 2,
+      "price": "8",
+      "lat": 52.2190448,
+      "lng": 21.0143584,
+      "navigationUrl": "https://www.google.com/maps/search/?api=1&query=CPG+Parking+Podziemny+Progi+1+Warszawa"
+    },
+    {
+      "name": "Parking CH Plac Unii",
+      "address": "Wjazd od ul. Tadeusza Boya-Żeleńskiego, Warszawa",
+      "walkingMinutes": 6,
+      "price": "10",
+      "lat": 52.2126564,
+      "lng": 21.0197502,
+      "navigationUrl": "https://www.google.com/maps/search/?api=1&query=Parking+Plac+Unii+Boya+Zelenskiego+Warszawa"
+    },
+    {
+      "name": "Interparking Piękna 20",
+      "address": "ul. Piękna 20, 00-549 Warszawa",
+      "walkingMinutes": 7,
+      "price": "8",
+      "lat": 52.223757,
+      "lng": 21.0194839,
+      "navigationUrl": "https://www.google.com/maps/search/?api=1&query=Interparking+Piekna+20+Warszawa"
+    },
+    {
+      "name": "Parking Bazar Polna",
+      "address": "ul. Polna 13, 00-633 Warszawa",
+      "walkingMinutes": 3,
+      "price": "5",
+      "lat": 52.2185005,
+      "lng": 21.0137752,
+      "navigationUrl": "https://www.google.com/maps/search/?api=1&query=APCOA+Parking+Polna+13+Warszawa"
+    }
+  ]
+}
