@@ -9,7 +9,7 @@
     {
       "name": "Parking Podziemny Waryńskiego",
       "address": "ul. Progi 1, 00-634 Warszawa",
-      "walkingMinutes": 2,
+      "walkingMinutes": 5,
       "price": "8",
       "lat": 52.2190448,
       "lng": 21.0143584,
@@ -18,8 +18,8 @@
     {
       "name": "Parking CH Plac Unii",
       "address": "Wjazd od ul. Tadeusza Boya-Żeleńskiego, Warszawa",
-      "walkingMinutes": 6,
-      "price": "10",
+      "walkingMinutes": 14,
+      "price": "13",
       "lat": 52.2126564,
       "lng": 21.0197502,
       "navigationUrl": "https://www.google.com/maps/search/?api=1&query=Parking+Plac+Unii+Boya+Zelenskiego+Warszawa"
@@ -27,7 +27,7 @@
     {
       "name": "Interparking Piękna 20",
       "address": "ul. Piękna 20, 00-549 Warszawa",
-      "walkingMinutes": 7,
+      "walkingMinutes": 9,
       "price": "8",
       "lat": 52.223757,
       "lng": 21.0194839,
@@ -36,7 +36,7 @@
     {
       "name": "Parking Bazar Polna",
       "address": "ul. Polna 13, 00-633 Warszawa",
-      "walkingMinutes": 3,
+      "walkingMinutes": 7,
       "price": "5",
       "lat": 52.2185005,
       "lng": 21.0137752,
