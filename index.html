@@ -254,7 +254,7 @@
 </head>
 <body>
   <div class="mx-auto min-h-screen max-w-6xl px-5 pb-10 pt-5 sm:px-8 sm:pt-8">
-    <nav class="theme-picker mx-auto flex max-w-4xl flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:px-5" aria-label="Wybór wariantu stylu">
+    <nav class="theme-picker mx-auto hidden max-w-4xl flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:px-5" aria-label="Wybór wariantu stylu" hidden>
       <span class="px-1 text-xs font-semibold uppercase tracking-[0.14em] muted">Wybierz wariant stylu:</span>
       <div class="grid grid-cols-1 gap-1 sm:grid-cols-3" role="group" aria-label="Warianty wyglądu strony">
         <button class="theme-button rounded-lg px-3 py-2 text-xs font-semibold" type="button" data-theme-choice="editorial" aria-pressed="true">Klasyczna Papeteria</button>
@@ -263,7 +263,7 @@
       </div>
     </nav>
 
-    <header class="mx-auto max-w-3xl pb-12 pt-14 text-center sm:pb-16 sm:pt-20">
+    <header class="mx-auto max-w-3xl pb-12 pt-6 text-center sm:pb-16 sm:pt-8">
       <div class="mb-5 flex items-center justify-center gap-4" aria-hidden="true">
         <span class="h-px w-12 bg-[var(--border)]"></span>
         <i class="fa-solid fa-diamond ornament text-sm"></i>
@@ -280,7 +280,7 @@
         <div class="parking-map-frame mb-6">
           <div id="parking-map" role="region" aria-label="Interaktywna mapa parkingów i Kościoła Najświętszego Zbawiciela" aria-describedby="parking-map-legend"></div>
           <div id="parking-map-legend" class="map-legend flex flex-wrap gap-x-6 gap-y-3 px-4 py-3 text-xs sm:px-5">
-            <span class="map-legend-item"><span class="map-legend-number">01</span> Numery parkingów odpowiadają liście poniżej</span>
+            <span class="map-legend-item"><span class="map-legend-number">01</span> Wybierz numer parkingu, aby przejść do jego opisu</span>
             <span class="map-legend-item"><span class="map-legend-church"><i class="fa-solid fa-cross" aria-hidden="true"></i></span> Kościół Najświętszego Zbawiciela</span>
           </div>
         </div>
@@ -426,6 +426,7 @@
       }
 
       const card = parkingCardTemplate.content.firstElementChild.cloneNode(true);
+      card.tabIndex = -1;
       const formattedNumber = String(parkingNumber).padStart(2, "0");
       const numberBadge = card.querySelector('[data-field="number"]');
       numberBadge.textContent = formattedNumber;
@@ -556,26 +557,49 @@
       const churchCoordinates = getCoordinates(church, "Kościół");
       const churchName = requiredText(church.name, "name kościoła", "—");
       const churchAddress = optionalText(church.address, "address kościoła", "—");
-      const map = L.map("parking-map", { scrollWheelZoom: false });
+      const map = L.map("parking-map", {
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        zoomControl: false
+      });
       const markerCoordinates = [churchCoordinates];
 
-      L.marker(churchCoordinates, { icon: createMapIcon(null, true), title: churchName })
+      L.marker(churchCoordinates, { icon: createMapIcon(null, true), title: churchName, autoPanOnFocus: false })
         .addTo(map)
-        .bindPopup(createMapPopup(churchName, churchAddress));
+        .bindPopup(createMapPopup(churchName, churchAddress), { autoPan: false });
 
       parkings.forEach((parking, index) => {
         const parkingNumber = String(index + 1).padStart(2, "0");
         const coordinates = getCoordinates(parking, `Parking ${parkingNumber}`);
         const name = requiredText(parking.name, "name", parkingNumber);
-        const address = optionalText(parking.address, "address", parkingNumber);
         markerCoordinates.push(coordinates);
 
+        const showCard = () => {
+          const card = parkingList.children[index];
+          card.scrollIntoView({ block: "start" });
+          card.focus({ preventScroll: true });
+        };
         L.marker(coordinates, {
           icon: createMapIcon(parkingNumber, false),
-          title: `Parking ${parkingNumber}: ${name}`
+          title: `Parking ${parkingNumber}: ${name}`,
+          autoPanOnFocus: false
         })
-          .addTo(map)
-          .bindPopup(createMapPopup(`Parking ${parkingNumber}: ${name}`, address));
+          .on("click", showCard)
+          .on("add", (event) => {
+            const markerElement = event.target.getElement();
+            markerElement.setAttribute("aria-label", `Przejdź do parkingu ${parkingNumber}: ${name}`);
+            markerElement.addEventListener("keydown", (keyEvent) => {
+              if (keyEvent.key === "Enter" || keyEvent.key === " ") {
+                keyEvent.preventDefault();
+                showCard();
+              }
+            });
+          })
+          .addTo(map);
       });
 
       map.fitBounds(L.latLngBounds(markerCoordinates), { padding: [28, 28], maxZoom: 15 });
